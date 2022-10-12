@@ -24,17 +24,33 @@ public class Person {
     private final Address address;
     private final Set<Tag> tags = new HashSet<>();
     private final Remark remark;
+    private final Status status;
 
     /**
      * Every field must be present and not null.
      */
-    public Person(Name name, Phone phone, Email email, Address address, Remark remark, Set<Tag> tags) {
-        requireAllNonNull(name, phone, email, address, tags);
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Status status) {
+        requireAllNonNull(name, phone, email, address, tags, status);
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.tags.addAll(tags);
+        this.status = status;
+        this.remark = new Remark("");
+    }
+
+    /**
+     * Overloaded constructor for Person when Remark is provided.
+     */
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Status status, Remark remark) {
+        requireAllNonNull(name, phone, email, address, tags, status);
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.address = address;
+        this.tags.addAll(tags);
+        this.status = status;
         this.remark = remark;
     }
 
@@ -64,6 +80,10 @@ public class Person {
      */
     public Set<Tag> getTags() {
         return Collections.unmodifiableSet(tags);
+    }
+
+    public Status getStatus() {
+        return status;
     }
 
     /**
@@ -99,13 +119,19 @@ public class Person {
                 && otherPerson.getEmail().equals(getEmail())
                 && otherPerson.getAddress().equals(getAddress())
                 && otherPerson.getTags().equals(getTags())
-                && otherPerson.getRemark().equals(getRemark());
+                && otherPerson.getRemark().equals(getRemark())
+                && otherPerson.getStatus().equals(getStatus());
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags, remark);
+        return Objects.hash(name, phone, email, address, tags, status, remark);
+    }
+
+    public String getDetailsAsString() {
+        return String.format("%s %s %s %s %s %s %s", name, phone, email, address, status,
+                tags, remark);
     }
 
     @Override
@@ -117,15 +143,19 @@ public class Person {
                 .append("; Email: ")
                 .append(getEmail())
                 .append("; Address: ")
-                .append(getAddress())
-                .append("; Remark: ")
-                .append(getRemark());
+                .append(getAddress());
 
         Set<Tag> tags = getTags();
         if (!tags.isEmpty()) {
             builder.append("; Tags: ");
             tags.forEach(builder::append);
         }
+
+        builder.append("; Status: ")
+                .append(getStatus());
+
+        builder.append("; Remark: ")
+            .append(getRemark());
 
         return builder.toString();
     }
